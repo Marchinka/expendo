@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <% include ../partials/header.ejs %>
+</head>
+
+<body>
+
+  <% include ../partials/nav.ejs %>
+    <div class="container">
+		<form id="cash-flow-form">
+		    <div class="form-group">
+		        <label for="date">Date</label>
+		        <input type="text" class="form-control" id="date" name="date" autocomplete="false" placeholder="Enter date" />
+		    </div>
+
+		    <div class="form-group">
+		        <label for="amount">Amount</label>
+		        <input type="text" class="form-control" id="amount" name="amount" autocomplete="false" placeholder="Enter amount" />
+		    </div>
+
+		    <div class="form-group">
+		        <label for="amount">Notes</label>
+		        <textarea type="text" class="form-control" id="notes" name="notes" placeholder="Any notes?" autocomplete="false"></textarea>
+		    </div>
+
+		    <div class="form-group">
+		        <div class="btn-group-vertical w-100" id="cash-flow-types"></div>
+		    </div>
+
+		    <input type="hidden" name="cashFlowTypeId" />
+		</form>
+    </div>
+
+  <% include ../partials/scripts.ejs %>
+      <script>
+        $("#amount").focus();
+        var now = moment().format('DD/MM/YYYY hh:mm');
+        $("#date").val(now);
+
+        var cashFlowTypes = [
+            { id: 5, name: "Spesa", color: "warning" },
+            { id: 10, name: "Spese Mediche", color: "success"  },
+        ];
+
+        var renderCashFlowTypes = function (cashFlows) {
+            $container = $("#cash-flow-types");
+            $container.html("");
+
+            _(cashFlowTypes).forEach(function (cashFlowType) {
+                var output = Mustache.render("<button type='button' data-type-id={{id}} class='btn-lg rounded-0 btn btn-outline-{{color}}'>{{name}}</button>", cashFlowType);
+                $container.append(output);
+            });
+        };
+
+        renderCashFlowTypes(cashFlowTypes);
+
+     
+        var $view = $("#cash-flow-form");
+        var submitCallback = function (e) {
+            var target = e.target;
+            var cashFlowTypeId = target.dataset.typeId;
+            var amount = $("#amount").val();
+            var date = $("#date").val();
+            var notes = $("#notes").val();
+
+            var data = {
+                cashFlowTypeId: cashFlowTypeId,
+                amount: amount,
+                date: date
+            };
+
+            console.log("data", data);
+        };
+
+        var eventModels = [{ event: "click", target: "button", callback: submitCallback }];
+
+        _(eventModels).forEach(function (eventModel) {
+            $view.on(eventModel.event, eventModel.target, eventModel.callback);
+        });
+        
+    </script>
+
+</body>
+</html>
