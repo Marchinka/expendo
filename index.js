@@ -27,7 +27,7 @@ app.route('/CashFlowTypes')
 				res.status(500).send('Something broke!');
 				return;
 			}
-			connection.query('SELECT id, name, colorCode FROM CashFlowType', function(err, result, fields) {
+			connection.query('SELECT id, name, colorCode FROM CashFlowTypeView', function(err, result, fields) {
     			res.send(result);
 			});
 		  	connection.release();

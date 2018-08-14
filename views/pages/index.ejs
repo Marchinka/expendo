@@ -130,6 +130,14 @@
 			                notes: notes
 			            };
 
+			            if(!data.amount) {
+			            	$.snackbar({
+									content: "<div class='text-center'><span>Invalid amount! </span><i class='text-success align-middle fas fas fa-coins fa-2x'></i></div>",
+									htmlAllowed: true
+							});	
+			            	return;
+			            }
+
 						$.ajax({
 							method: "PUT",
 							url: "/cashflow",
@@ -142,6 +150,9 @@
 									content: "<div class='text-center'><span>Cash flow created! </span><i class='text-success align-middle far fa-smile fa-2x'></i></div>",
 									htmlAllowed: true
 								});	
+								$("#amount").val("");
+					            $("#notes").val("");
+					            $("html, body").animate({ scrollTop: 0 }, "slow");
 							} else {
 								$.snackbar({
 									content: "<div class='text-center'><span>Smothing went wrong... </span><i class='text-warning align-middle far fa-frown fa-2x'></i></div>",
