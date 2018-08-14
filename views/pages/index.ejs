@@ -53,9 +53,9 @@
 			  	</div>
 
 			    <div class="row">
-				  <button type="button" class="col-4 btn btn-warning plus-minus-button">+/-</button>
-				  <button type="button" class="col-4 btn btn-info keyboard-button" data-content="0">0</button>
-				  <button type="button" class="col-4 btn btn-info keyboard-button" data-content=",">,</button>
+				  <button type="button" class="col-4 btn btn-primary plus-minus-button">+/-</button>
+				  <button type="button" class="col-4 btn btn-secondary keyboard-button" data-content="0">0</button>
+				  <button type="button" class="col-4 btn btn-primary keyboard-button" data-content=".">.</button>
 			  	</div>
 
 
@@ -136,10 +136,24 @@
 						    dataType : "json",
 						    contentType: "application/json; charset=utf-8",
     						data: JSON.stringify(data)
-						}).done(function(cashFlowTypes) {
-
+						}).done(function(result) {
+							if(result.isSuccessfull) {
+								$.snackbar({
+									content: "<div class='text-center'><span>Cash flow created! </span><i class='text-success align-middle far fa-smile fa-2x'></i></div>",
+									htmlAllowed: true
+								});	
+							} else {
+								$.snackbar({
+									content: "<div class='text-center'><span>Smothing went wrong... </span><i class='text-warning align-middle far fa-frown fa-2x'></i></div>",
+									htmlAllowed: true
+								});
+							}
+						}).fail(function () {
+								$.snackbar({
+									content: "<div class='text-center'><span>Smothing went wrong... </span><i class='text-warning align-middle far fa-frown fa-2x'></i></div>",
+									htmlAllowed: true
+								});	
 						});
-			            console.log("data", data);
 			        } 
 	        	},
 	        	{ 	

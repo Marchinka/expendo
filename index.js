@@ -21,18 +21,13 @@ app.get('/', (req, res) => res.render('pages/index'));
 
 app.route('/CashFlowTypes')
 	.get(function(req, res) {
-	  	var cashFlowTypes = [
-	        { id: 5, name: "Spesa", color: "warning" },
-	        { id: 10, name: "Spese Mediche", color: "success"  },
-	    ];
-
 	    var pool =  mysql.createPool(databaseConfiguration);
 		pool.getConnection(function(err, connection) {
 			if (!connection) {
-				throw new Error("Error during connection");
+				res.status(500).send('Something broke!');
+				return;
 			}
 			connection.query('SELECT id, name, colorCode FROM CashFlowType', function(err, result, fields) {
-    			console.log(result);
     			res.send(result);
 			});
 		  	connection.release();
@@ -40,9 +35,52 @@ app.route('/CashFlowTypes')
 	});
 
 app.route('/CashFlow')
+	.get(function(req, res) {
+	    var pool =  mysql.createPool(databaseConfiguration);
+		pool.getConnection(function(err, connection) {
+			if (!connection) {
+				res.status(500).send('Something broke!');
+				return;
+			}
+			connection.query('SELECT * FROM CashFlowView ORDER BY Id DESC', function(err, result, fields) {
+    			res.send(result);
+			});
+		  	connection.release();
+		});
+	})
+	// .delete(function(req, res) {
+	//     var pool =  mysql.createPool(databaseConfiguration);
+	// 	pool.getConnection(function(err, connection) {
+	// 		if (!connection) {
+	// 			throw new Error("Error during connection");
+	// 		}
+	// 		connection.query('DELETE * FROM CashFlowV WHERE Id = ?', req.params.id, function(err, result, fields) {
+ //    			res.send(result);
+	// 		});
+	// 	  	connection.release();
+	// 	});
+	// })
 	.put(function(req, res) {
-		console.log(req.body);
-	    res.send(req.body);
+	    var pool =  mysql.createPool(databaseConfiguration);
+		pool.getConnection(function(err, connection) {
+			if (!connection) {
+				res.status(500).send('Something broke!');
+				return;
+			}
+
+			var sqlParameters = [
+				req.body.amount || 0,
+				req.body.cashFlowTypeId,
+				req.body.notes || '',
+				req.body.date
+			];
+			connection.query('CALL InsertCashFlow(?, ?, ?, ?)', sqlParameters, function(err, result, fields) {
+    			res.send({
+    				isSuccessfull: result.affectedRows == 1
+    			});
+			});
+		  	connection.release();
+		});
 	});
 
 
