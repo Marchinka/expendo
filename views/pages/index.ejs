@@ -15,12 +15,40 @@
 		    </div>
 
 		    <div class="form-group">
-		        <label for="amount">Amountone</label>
-		        <input type="number" class="form-control" id="amount" name="amount" autocomplete="false" placeholder="Enter amount" />
+		        <label for="amount">Amount</label>
+		        <input type="text" class="form-control" id="amount" name="amount" autocomplete="false" placeholder="Enter amount" />
 		    </div>
+
+			    <div class="row">
+				  <button type="button" class="col-sm-4 btn btn-secondary keyboard-button" data-content="1">1</button>
+				  <button type="button" class="col-sm-4 btn btn-secondary keyboard-button" data-content="2">2</button>
+				  <button type="button" class="col-sm-4 btn btn-secondary keyboard-button" data-content="3">3</button>
+			  	</div>
+			    <div class="row">
+				  <button type="button" class="col-sm-4 btn btn-secondary keyboard-button" data-content="4">4</button>
+				  <button type="button" class="col-sm-4 btn btn-secondary keyboard-button" data-content="5">5</button>
+				  <button type="button" class="col-sm-4 btn btn-secondary keyboard-button" data-content="6">6</button>
+			  	</div>
+			    <div class="row">
+				  <button type="button" class="col-sm-4 btn btn-secondary keyboard-button" data-content="7">7</button>
+				  <button type="button" class="col-sm-4 btn btn-secondary keyboard-button" data-content="8">8</button>
+				  <button type="button" class="col-sm-4 btn btn-secondary keyboard-button" data-content="9">9</button>
+			  	</div>
+
+			    <div class="row">
+				  <button type="button" class="col-sm-4 btn btn-secondary plus-minus-button" data-content="+">+</button>
+				  <button type="button" class="col-sm-4 btn btn-secondary keyboard-button" data-content=",">,</button>
+				  <button type="button" class="col-sm-4 btn btn-secondary plus-minus-button" data-content="-">-</button>
+			  	</div>
 
 		    <div class="form-group">
 		        <div class="btn-group-vertical w-100" id="cash-flow-types"></div>
+		    </div>
+
+
+		    <div class="form-group">
+		        <label for="amount">Notes</label>
+		        <textarea type="number" class="form-control" id="notes" name="notes" autocomplete="false" placeholder="Enter amount"></textarea>
 		    </div>
 
 		    <input type="hidden" name="cashFlowTypeId" />
@@ -44,7 +72,7 @@
             $container.html("");
 
             _(cashFlowTypes).forEach(function (cashFlowType) {
-                var output = Mustache.render("<button type='button' data-type-id={{id}} class='btn-lg rounded-0 btn btn-outline-{{color}}'>{{name}}</button>", cashFlowType);
+                var output = Mustache.render("<button type='button' data-type-id={{id}} class='cash-flow-button btn-lg rounded-0 btn btn-outline-{{color}}'>{{name}}</button>", cashFlowType);
                 $container.append(output);
             });
         };
@@ -53,6 +81,7 @@
 
      
         var $view = $("#cash-flow-form");
+
         var submitCallback = function (e) {
             var target = e.target;
             var cashFlowTypeId = target.dataset.typeId;
@@ -69,7 +98,32 @@
             console.log("data", data);
         };
 
-        var eventModels = [{ event: "click", target: "button", callback: submitCallback }];
+        var keyboardCallback = function (e) {
+            var target = e.target;
+            var content = target.dataset.content;
+            var amount = $("#amount").val() || "";
+            var newAmount = amount.toString() + content;
+            $("#amount").val(newAmount);
+        };
+
+        var plusMinusCallback = function (e) {
+            var target = e.target;
+            var content = target.dataset.content;
+            var amount = $("#amount").val() || "";
+            if(amount.charAt(0) == "+" || amount.charAt(0) == "-") {
+            	amount = amount.substring(1, amount.amount);
+            }
+
+            var newAmount = content + amount.toString();
+            $("#amount").val(newAmount);
+            $("#amount").val(newAmount);
+        };
+
+        var eventModels = [
+        	{ event: "click", target: ".cash-flow-button", callback: submitCallback },
+        	{ event: "click", target: ".keyboard-button", callback: keyboardCallback },
+        	{ event: "click", target: ".plus-minus-button", callback: plusMinusCallback }
+        ];
 
         _(eventModels).forEach(function (eventModel) {
             $view.on(eventModel.event, eventModel.target, eventModel.callback);
