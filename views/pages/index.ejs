@@ -79,81 +79,99 @@
 </div>
 
 
-  <% include ../partials/scripts.ejs %>
+  	  <% include ../partials/scripts.ejs %>
       <script>
-        $("#amount").focus();
-        var now = moment().format('DD/MM/YYYY hh:mm');
-        $("#date").val(now);
+      	var initializeComponents = function () {
+	        $("#amount").focus();
+	        var now = moment().format('DD/MM/YYYY hh:mm');
+	        $("#date").val(now);
+		};
+		var initializeCashFlowTypes = function () {
+			$.ajax({
+				method: "GET",
+				url: "/cashflowtypes",
+			}).done(function(cashFlowTypes) {
+		        var renderCashFlowTypes = function (cashFlows) {
+		            $container = $("#cash-flow-types");
+		            $container.html("");
 
-        var cashFlowTypes = [
-            { id: 5, name: "Spesa", color: "warning" },
-            { id: 10, name: "Spese Mediche", color: "success"  },
-        ];
+		            _(cashFlowTypes).forEach(function (cashFlowType) {
+		                var output = Mustache.render("<button type='button' data-type-id={{id}} class='cash-flow-button btn-lg rounded-0 btn btn-outline-{{colorCode}}'>{{name}}</button>", cashFlowType);
+		                $container.append(output);
+		            });
+		    	};
+		    	renderCashFlowTypes(cashFlowTypes);
+			});
+		};
+		var initializeEvents = function (keySelector, eventModels) {     
+	        var $view = $(keySelector);
+	        _(eventModels).forEach(function (eventModel) {
+	            $view.on(eventModel.event, eventModel.target, eventModel.callback);
+	        });
+		};
 
-        var renderCashFlowTypes = function (cashFlows) {
-            $container = $("#cash-flow-types");
-            $container.html("");
+		initializeComponents();
+		initializeCashFlowTypes();
+		initializeEvents("#cash-flow-form",  [
+	        	{
+	        		event: "click",
+	        		target: ".cash-flow-button", 
+	        		callback: function (e) {
+			            var target = e.target;
+			            var cashFlowTypeId = target.dataset.typeId;
+			            var amount = $("#amount").val();
+			            var date = $("#date").val();
+			            var notes = $("#notes").val();
 
-            _(cashFlowTypes).forEach(function (cashFlowType) {
-                var output = Mustache.render("<button type='button' data-type-id={{id}} class='cash-flow-button btn-lg rounded-0 btn btn-outline-{{color}}'>{{name}}</button>", cashFlowType);
-                $container.append(output);
-            });
-        };
+			            var data = {
+			                cashFlowTypeId: cashFlowTypeId,
+			                amount: amount,
+			                date: date,
+			                notes: notes
+			            };
 
-        renderCashFlowTypes(cashFlowTypes);
+						$.ajax({
+							method: "PUT",
+							url: "/cashflow",
+						    dataType : "json",
+						    contentType: "application/json; charset=utf-8",
+    						data: JSON.stringify(data)
+						}).done(function(cashFlowTypes) {
 
-     
-        var $view = $("#cash-flow-form");
-
-        var submitCallback = function (e) {
-            var target = e.target;
-            var cashFlowTypeId = target.dataset.typeId;
-            var amount = $("#amount").val();
-            var date = $("#date").val();
-            var notes = $("#notes").val();
-
-            var data = {
-                cashFlowTypeId: cashFlowTypeId,
-                amount: amount,
-                date: date
-            };
-
-            console.log("data", data);
-        };
-
-        var keyboardCallback = function (e) {
-            var target = e.target;
-            var content = target.dataset.content;
-            var amount = $("#amount").val() || "";
-            var newAmount = amount.toString() + content;
-            $("#amount").val(newAmount);
-        };
-
-        var plusMinusCallback = function (e) {
-            var target = e.target;
-            var content = target.dataset.content;
-            var amount = $("#amount").val() || "";
-            var newAmount = "";
-            if(amount.charAt(0) == "+") {
-            	newAmount = "-" + amount.substring(1, amount.amount);
-            } else if(amount.charAt(0) == "-") {
-            	newAmount = "+" + amount.substring(1, amount.amount);
-            } else {
-				newAmount = "+" + amount.toString();
-            }
-            $("#amount").val(newAmount);
-        };
-
-        var eventModels = [
-        	{ event: "click", target: ".cash-flow-button", callback: submitCallback },
-        	{ event: "click", target: ".keyboard-button", callback: keyboardCallback },
-        	{ event: "click", target: ".plus-minus-button", callback: plusMinusCallback }
-        ];
-
-        _(eventModels).forEach(function (eventModel) {
-            $view.on(eventModel.event, eventModel.target, eventModel.callback);
-        });
-        
+						});
+			            console.log("data", data);
+			        } 
+	        	},
+	        	{ 	
+	        		event: "click", 
+	        		target: ".keyboard-button", 
+	        		callback: function (e) {
+			            var target = e.target;
+			            var content = target.dataset.content;
+			            var amount = $("#amount").val() || "";
+			            var newAmount = amount.toString() + content;
+			            $("#amount").val(newAmount);
+			        } 
+	        	},
+	        	{ 	
+	        		event: "click",
+	        		target: ".plus-minus-button", 
+	        		callback: function (e) {
+			            var target = e.target;
+			            var content = target.dataset.content;
+			            var amount = $("#amount").val() || "";
+			            var newAmount = "";
+			            if(amount.charAt(0) == "+") {
+			            	newAmount = "-" + amount.substring(1, amount.amount);
+			            } else if(amount.charAt(0) == "-") {
+			            	newAmount = "+" + amount.substring(1, amount.amount);
+			            } else {
+							newAmount = "+" + amount.toString();
+			            }
+			            $("#amount").val(newAmount);
+			        }
+	        	}
+	        ]);
     </script>
 
 </body>
