@@ -9,6 +9,11 @@
   .plus-minus-button{
   	font-size: 1.3rem!important;
   }
+
+  .app-content{
+  	padding-top: 53px;
+  	height: 100%;
+  }
   </style>
 </head>
 
@@ -19,7 +24,7 @@
   <% include ../partials/nav.ejs %>
   <main class="bmd-layout-content">
 
-    <div class="container">
+    <div class="container app-content">
 		<form id="cash-flow-form">
 		    <div class="form-group">
 		        <label for="date">Date</label>
@@ -48,9 +53,9 @@
 			  	</div>
 
 			    <div class="row">
-				  <button type="button" class="col-4 btn btn-secondary plus-minus-button">+/-</button>
-				  <button type="button" class="col-4 btn btn-secondary keyboard-button" data-content="0">0</button>
-				  <button type="button" class="col-4 btn btn-secondary keyboard-button" data-content=",">,</button>
+				  <button type="button" class="col-4 btn btn-warning plus-minus-button">+/-</button>
+				  <button type="button" class="col-4 btn btn-info keyboard-button" data-content="0">0</button>
+				  <button type="button" class="col-4 btn btn-info keyboard-button" data-content=",">,</button>
 			  	</div>
 
 
