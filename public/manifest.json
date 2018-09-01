@@ -1,0 +1,9 @@
+{
+ "name": "Expendo",
+ "short_name": "Expendo",
+ "icons": [
+ ],
+  "display": "standalone",
+  "background_color": "#009688",
+  "theme_color": "#009688"
+}
