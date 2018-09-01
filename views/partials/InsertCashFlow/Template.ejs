@@ -1,0 +1,49 @@
+<form id="cash-flow-form">
+    <div class="form-group">
+        <label for="date">Date</label>
+        <input type="text" class="form-control" id="date" name="date" autocomplete="false" placeholder="Enter date" />
+    </div>
+
+    <div class="form-group">
+        <label for="amount">Amount</label>
+        <input type="text" class="form-control" id="amount" name="amount" autocomplete="false" placeholder="Enter amount" />
+    </div>
+
+	    <div class="row">
+		  <button type="button" class="col-4 btn btn-secondary keyboard-button display-4" data-content="1">1</button>
+		  <button type="button" class="col-4 btn btn-secondary keyboard-button display-4" data-content="2">2</button>
+		  <button type="button" class="col-4 btn btn-secondary keyboard-button display-4" data-content="3">3</button>
+	  	</div>
+	    <div class="row">
+		  <button type="button" class="col-4 btn btn-secondary keyboard-button" data-content="4">4</button>
+		  <button type="button" class="col-4 btn btn-secondary keyboard-button" data-content="5">5</button>
+		  <button type="button" class="col-4 btn btn-secondary keyboard-button" data-content="6">6</button>
+	  	</div>
+	    <div class="row">
+		  <button type="button" class="col-4 btn btn-secondary keyboard-button" data-content="7">7</button>
+		  <button type="button" class="col-4 btn btn-secondary keyboard-button" data-content="8">8</button>
+		  <button type="button" class="col-4 btn btn-secondary keyboard-button" data-content="9">9</button>
+	  	</div>
+
+	    <div class="row">
+		  <button type="button" class="col-4 btn btn-primary plus-minus-button">+/-</button>
+		  <button type="button" class="col-4 btn btn-secondary keyboard-button" data-content="0">0</button>
+		  <button type="button" class="col-4 btn btn-primary keyboard-button" data-content=".">.</button>
+	  	</div>
+
+
+
+    <div class="form-group">
+        <label for="amount">Notes</label>
+        <textarea type="number" class="form-control" id="notes" name="notes" autocomplete="false" placeholder="Any notes?"></textarea>
+    </div>
+
+    <div class="form-group">
+        <div class="btn-group-vertical w-100" id="cash-flow-types"></div>
+    </div>
+
+
+    <input type="hidden" name="cashFlowTypeId" />
+
+</form>
+

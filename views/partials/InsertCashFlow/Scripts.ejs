@@ -1,0 +1,111 @@
+<script>
+  	var initializeComponents = function () {
+        $("#amount").focus();
+        var now = moment().format('DD/MM/YYYY hh:mm');
+        $("#date").val(now);
+	};
+	var renderInsertCashFlowForm = function () {
+		$.ajax({
+			method: "GET",
+			url: "/cashflowtypes",
+		}).done(function(cashFlowTypes) {
+	        var renderCashFlowTypes = function (cashFlows) {
+	            $container = $("#cash-flow-types");
+	            $container.html("");
+
+	            _(cashFlowTypes).forEach(function (cashFlowType) {
+	                var output = Mustache.render("<button type='button' data-type-id={{id}} class='cash-flow-button btn-lg rounded-0 btn btn-outline-{{colorCode}}'>{{name}}</button>", cashFlowType);
+	                $container.append(output);
+	            });
+	    	};
+	    	renderCashFlowTypes(cashFlowTypes);
+		});
+	};
+
+	initializeComponents();
+		initializeEvents("#cash-flow-form",  [
+        	{
+        		event: "click",
+        		target: ".cash-flow-button", 
+        		callback: function (e) {
+		            var target = e.target;
+		            var cashFlowTypeId = target.dataset.typeId;
+		            var amount = $("#amount").val();
+		            var date = $("#date").val();
+		            var notes = $("#notes").val();
+
+		            var data = {
+		                cashFlowTypeId: cashFlowTypeId,
+		                amount: amount,
+		                date: date,
+		                notes: notes
+		            };
+
+		            if(!data.amount) {
+		            	$.snackbar({
+								content: "<div class='text-center'><span>Invalid amount! </span><i class='text-success align-middle fas fas fa-coins fa-2x'></i></div>",
+								htmlAllowed: true
+						});	
+		            	return;
+		            }
+
+					$.ajax({
+						method: "PUT",
+						url: "/cashflow",
+					    dataType : "json",
+					    contentType: "application/json; charset=utf-8",
+						data: JSON.stringify(data)
+					}).done(function(result) {
+						if(result.isSuccessfull) {
+							$.snackbar({
+								content: "<div class='text-center'><span>Cash flow created! </span><i class='text-success align-middle far fa-smile fa-2x'></i></div>",
+								htmlAllowed: true
+							});	
+							$("#amount").val("");
+				            $("#notes").val("");
+				            $("html, body").animate({ scrollTop: 0 }, "slow");
+						} else {
+							$.snackbar({
+								content: "<div class='text-center'><span>Smothing went wrong... </span><i class='text-warning align-middle far fa-frown fa-2x'></i></div>",
+								htmlAllowed: true
+							});
+						}
+					}).fail(function () {
+							$.snackbar({
+								content: "<div class='text-center'><span>Smothing went wrong... </span><i class='text-warning align-middle far fa-frown fa-2x'></i></div>",
+								htmlAllowed: true
+							});	
+					});
+		        } 
+        	},
+        	{ 	
+        		event: "click", 
+        		target: ".keyboard-button", 
+        		callback: function (e) {
+		            var target = e.target;
+		            var content = target.dataset.content;
+		            var amount = $("#amount").val() || "";
+		            var newAmount = amount.toString() + content;
+		            $("#amount").val(newAmount);
+		        } 
+        	},
+        	{ 	
+        		event: "click",
+        		target: ".plus-minus-button", 
+        		callback: function (e) {
+		            var target = e.target;
+		            var content = target.dataset.content;
+		            var amount = $("#amount").val() || "";
+		            var newAmount = "";
+		            if(amount.charAt(0) == "+") {
+		            	newAmount = "-" + amount.substring(1, amount.amount);
+		            } else if(amount.charAt(0) == "-") {
+		            	newAmount = "+" + amount.substring(1, amount.amount);
+		            } else {
+						newAmount = "+" + amount.toString();
+		            }
+		            $("#amount").val(newAmount);
+		        }
+        	}
+        ]);
+</script>

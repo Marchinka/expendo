@@ -1,0 +1,40 @@
+<script>
+	var renderCashFlowList = function () {
+		$.ajax({
+			method: "GET",
+			url: "/cashflow",
+		}).done(function(cashFlowList) {
+	        var renderCashFlowList = function (cashFlows) {
+	            $container = $("#cash-flow-list");
+	            $container.html("");
+
+	            _(cashFlows).forEach(function (cashFlow) {
+	            	var template = 
+	"<div class='alert alert-{{Color}} clearfix' role='alert'>" +
+	"	<div class='clearfix'>" +
+	"		<div class='float-left info-container'>" + 
+	"			<span class='d-block text-uppercase'>{{Date}}</span>" + 
+	"			<strong class='d-block text-uppercase font-we'>{{CashFlowType}}</strong>" + 
+	"		</div>" + 
+	"		<div class='float-left'>" + 
+	"  			<span>&euro;</span>&nbsp;<span class='display-3'>{{Amount}}</span>" + 
+	"		</div>" + 
+	//"		<div class='float-right'>" + 
+	//"  			<button data-source-id='{{Id}}' class='btn btn-outline-{{Color}}'><span class='fa fa-trash'></span></button>" + 
+	//"		</div>" + 
+	"	</div>" +
+	"	<div>" +
+	"		<small>{{Notes}}</small>" +
+	"	</div>" +
+	"</div>";
+
+	                var output = Mustache.render(template, cashFlow);
+	                $container.append(output);
+	            });
+	    	};
+	    	renderCashFlowList(cashFlowList);
+		});
+	};
+
+	renderCashFlowList();
+</script>
