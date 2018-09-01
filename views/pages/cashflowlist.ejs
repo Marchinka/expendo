@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <% include ../partials/header.ejs %>
+  <style type="text/css">
+  .amount-container{
+  }
+  .info-container{
+  	margin-right: 20px;
+  }
+
+  .app-content{
+  	padding-top: 53px;
+  	height: 100%;
+  }
+  </style>
+</head>
+
+<body>
+
+
+<div class="bmd-layout-container bmd-drawer-f-l bmd-drawer-overlay">
+  <% include ../partials/nav.ejs %>
+  <main class="bmd-layout-content">
+
+  	<br />
+    <div class="container app-content">
+		<div id="cash-flow-list"></div>
+    </div>
+
+  </main>
+</div>
+  	  <% include ../partials/scripts.ejs %>
+      <script>
+		var initializeCashFlows = function () {
+			$.ajax({
+				method: "GET",
+				url: "/cashflow",
+			}).done(function(cashFlowList) {
+		        var renderCashFlowList = function (cashFlows) {
+		            $container = $("#cash-flow-list");
+		            $container.html("");
+
+		            _(cashFlows).forEach(function (cashFlow) {
+		            	var template = 
+		"<div class='alert alert-{{Color}} clearfix' role='alert'>" +
+		"	<div class='clearfix'>" +
+		"		<div class='float-left info-container'>" + 
+		"			<span class='d-block text-uppercase'>{{Date}}</span>" + 
+		"			<strong class='d-block text-uppercase font-we'>{{CashFlowType}}</strong>" + 
+		"		</div>" + 
+		"		<div class='float-left'>" + 
+		"  			<span>&euro;</span>&nbsp;<span class='display-3'>{{Amount}}</span>" + 
+		"		</div>" + 
+		//"		<div class='float-right'>" + 
+		//"  			<button data-source-id='{{Id}}' class='btn btn-outline-{{Color}}'><span class='fa fa-trash'></span></button>" + 
+		//"		</div>" + 
+		"	</div>" +
+		"	<div>" +
+		"		<small>{{Notes}}</small>" +
+		"	</div>" +
+		"</div>";
+
+		                var output = Mustache.render(template, cashFlow);
+		                $container.append(output);
+		            });
+		    	};
+		    	renderCashFlowList(cashFlowList);
+			});
+		};
+
+		initializeCashFlows();
+    </script>
+
+</body>
+</html>
