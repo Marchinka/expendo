@@ -13,11 +13,11 @@
 
     <div class="container app-content">
       <div id="insert-cash-flow">
-		    <% include ../partials/insertcashflow/template.ejs %>
+		    <% include ../partials/insertcashflow_template.ejs %>
       </div>
 
       <div id="cash-flow-list">
-        <% include ../partials/cashflowlist/template.ejs %>
+        <% include ../partials/cashflowlist_template.ejs %>
       </div>   
     </div>
 
@@ -26,8 +26,8 @@
 
 
 <% include ../partials/scripts.ejs %>
-<% include ../partials/insertcashflow/scripts.ejs %>
-<% include ../partials/cashflowlist/scripts.ejs %>
+<% include ../partials/insertcashflow_scripts.ejs %>
+<% include ../partials/cashflowlist_scripts.ejs %>
 <script>
   var goToInsertCashFlow = function() {
       console.log('Navigation: InsertCashFlow');
