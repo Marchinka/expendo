@@ -1,0 +1,67 @@
+<script>
+var createPieSection = function(op){
+	var $container = $(op.container);
+	var initializeComponent = function(){
+			$container.find("[name=year]").val(new Date().getFullYear());
+			$container.find("[name=month]").val(new Date().getMonth() + 1);
+	};
+	initializeComponent();
+
+	var renderPieChart = function () {
+			var options ={
+				year: $container.find("[name=year]").val(),
+				month: $container.find("[name=month]").val()
+			};
+			$.ajax({
+				data: options,
+				method: "GET",
+				url: op.url,
+			}).done(function(result) {
+		        console.log("result", result)
+
+		        var values = [];
+		        var labels = [];
+
+		        _(result.cashFlows).forEach(function(cashFlow){
+		        	values.push(cashFlow.Amount);
+		        	labels.push(cashFlow.CashFlowType);
+		        });
+		        console.log("result", values)
+		        console.log("result", labels)
+
+		        var data = [{
+				  values: values,
+				  labels: labels,
+				  type: 'pie'
+				}];
+
+				var layout = {
+		  		margin: {
+		   		 l: 0,
+		   		 r: 0,
+		   		 b: 0,
+		  		  t: 0,
+		  		  pad: 0
+		  		},
+					paper_bgcolor: "#fafafa",
+					legend: {
+						orientation: "h"
+  					}
+				};
+				$container.find("#pie-container").html("");
+				Plotly.newPlot('pie-container', data, layout);
+			}); 
+		};
+
+		window.onresize = function() {
+			Plotly.Plots.resize('pie-container');
+		};
+
+
+		$container.find("[name=year]").change(renderPieChart);
+		$container.find("[name=month]").change(renderPieChart);
+	return {
+		refresh : renderPieChart
+	};
+};
+</script>

@@ -23,6 +23,11 @@
       <div id="cash-flow-sum-list">
         <% include ../partials/cashflowlist_template.ejs %>
       </div>   
+
+
+      <div id="pie-chart">
+        <% include ../partials/pie_template.ejs %>
+      </div>   
     </div>
 
   </main>
@@ -32,6 +37,7 @@
 <% include ../partials/scripts.ejs %>
 <% include ../partials/insertcashflow_scripts.ejs %>
 <% include ../partials/cashflowlist_scripts.ejs %>
+<% include ../partials/pie_scripts.ejs %>
 <script>
     var insertCashFlow = createInsertCashFlow();
     var cashFlowList = createCashFlowList({
@@ -39,13 +45,17 @@
         container: "#cash-flow-list"
     });
     var cashFlowSumList = createCashFlowList({
+        container: "#pie-chart"
+    });
+
+    var pieSection = createPieSection({
         url: "/cashflowsum",
         container: "#cash-flow-sum-list"
     });
 
   var goToInsertCashFlow = function() {
-      console.log('Navigation: InsertCashFlow');
 
+      $("#pie-chart").hide();
       $("#cash-flow-list").hide();
       $("#cash-flow-sum-list").hide();
       $("#insert-cash-flow").show();
@@ -53,8 +63,8 @@
   };
 
   var goToCashFlowLIst = function() {
-      console.log('Navigation: CashFlowList');
 
+      $("#pie-chart").hide();
       $("#insert-cash-flow").hide();
       $("#cash-flow-sum-list").hide();
       $("#cash-flow-list").show();
@@ -62,12 +72,21 @@
   };
 
   var goToCashFlowSumLIst = function() {
-      console.log('Navigation: CashFlowList');
 
+      $("#pie-chart").hide();
       $("#insert-cash-flow").hide();
       $("#cash-flow-list").hide();
       $("#cash-flow-sum-list").show();
       cashFlowSumList.refresh();
+  };
+
+  var goToPieChart = function() {
+
+      $("#pie-chart").show();
+      $("#insert-cash-flow").hide();
+      $("#cash-flow-list").hide();
+      $("#cash-flow-sum-list").hide();
+      pieSection.refresh();
   };
 
   Router.navigate();
@@ -76,6 +95,7 @@
   .add(/InsertCashFlow/, goToInsertCashFlow)
   .add(/CashFlowList/, goToCashFlowLIst)
   .add(/CashFlowSumList/, goToCashFlowSumLIst)
+  .add(/PieChart/, goToPieChart)
   .listen();
 
   Router.navigate("/InsertCashFlow/");
