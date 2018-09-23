@@ -19,6 +19,10 @@
       <div id="cash-flow-list">
         <% include ../partials/cashflowlist_template.ejs %>
       </div>   
+
+      <div id="cash-flow-sum-list">
+        <% include ../partials/cashflowlist_template.ejs %>
+      </div>   
     </div>
 
   </main>
@@ -29,20 +33,41 @@
 <% include ../partials/insertcashflow_scripts.ejs %>
 <% include ../partials/cashflowlist_scripts.ejs %>
 <script>
+    var insertCashFlow = createInsertCashFlow();
+    var cashFlowList = createCashFlowList({
+        url: "/cashflow",
+        container: "#cash-flow-list"
+    });
+    var cashFlowSumList = createCashFlowList({
+        url: "/cashflowsum",
+        container: "#cash-flow-sum-list"
+    });
+
   var goToInsertCashFlow = function() {
       console.log('Navigation: InsertCashFlow');
 
       $("#cash-flow-list").hide();
+      $("#cash-flow-sum-list").hide();
       $("#insert-cash-flow").show();
-      renderInsertCashFlowForm();
+      insertCashFlow.refresh();
   };
 
   var goToCashFlowLIst = function() {
       console.log('Navigation: CashFlowList');
 
       $("#insert-cash-flow").hide();
+      $("#cash-flow-sum-list").hide();
       $("#cash-flow-list").show();
-      renderCashFlowList();
+      cashFlowList.refresh();
+  };
+
+  var goToCashFlowSumLIst = function() {
+      console.log('Navigation: CashFlowList');
+
+      $("#insert-cash-flow").hide();
+      $("#cash-flow-list").hide();
+      $("#cash-flow-sum-list").show();
+      cashFlowSumList.refresh();
   };
 
   Router.navigate();
@@ -50,6 +75,7 @@
   .add("/", goToInsertCashFlow)
   .add(/InsertCashFlow/, goToInsertCashFlow)
   .add(/CashFlowList/, goToCashFlowLIst)
+  .add(/CashFlowSumList/, goToCashFlowSumLIst)
   .listen();
 
   Router.navigate("/InsertCashFlow/");

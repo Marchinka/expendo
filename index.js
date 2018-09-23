@@ -59,9 +59,14 @@ app.route('/CashFlow')
 				res.status(500).send('Something broke!: ' + err);
 				return;
 			}
-			connection.query('SELECT * FROM CashFlowView ORDER BY Id DESC', function(err, result, fields) {
+
+			var year = parseFloat(req.query.year);
+			var month = parseFloat(req.query.month);
+			connection.query('SELECT * FROM CashFlowView WHERE Month = ? AND Year = ? ORDER BY Id DESC', [month, year], function(err, result, fields) {
 				connection.release();
-    			res.send(result);
+    			res.send({
+    				cashFlows: result
+    			});
 			});
 		});
 	})
@@ -99,5 +104,23 @@ app.route('/CashFlow')
 		});
 	});
 
+app.route('/CashFlowSum')
+	.get(function(req, res) {
+		pool.getConnection(function(err, connection) {
+			if (!connection) {
+				res.status(500).send('Something broke!: ' + err);
+				return;
+			}
 
+			var year = parseFloat(req.query.year);
+			var month = parseFloat(req.query.month);
+			console.log(month)
+			connection.query('SELECT * FROM CashFlowSumView WHERE Month = ? AND Year = ? ORDER BY Amount DESC', [month, year], function(err, result, fields) {
+				connection.release();
+    			res.send({
+    				cashFlows: result
+    			});
+			});
+		});
+	});
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`));

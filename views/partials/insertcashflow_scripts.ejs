@@ -1,4 +1,6 @@
 <script>
+var createInsertCashFlow = function(){
+
   	var initializeComponents = function () {
         $("#amount").focus();
         var now = moment().format('DD/MM/YYYY hh:mm');
@@ -108,4 +110,9 @@
 		        }
         	}
         ]);
+
+        return {
+        	refresh: renderInsertCashFlowForm
+        };
+};
 </script> 

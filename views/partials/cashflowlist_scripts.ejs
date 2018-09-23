@@ -1,40 +1,73 @@
 <script>
-	var renderCashFlowList = function () {
-		$.ajax({
-			method: "GET",
-			url: "/cashflow",
-		}).done(function(cashFlowList) {
-	        var renderCashFlowList = function (cashFlows) {
-	            $container = $("#cash-flow-list");
-	            $container.html("");
+	var createCashFlowList = function(op) {
+		var $container = $(op.container);
+		var initializeComponent = function(){
+			$container.find("[name=year]").val(new Date().getFullYear());
+			$container.find("[name=month]").val(new Date().getMonth() + 1);
+		};
+		var renderCashFlowList = function () {
+			var options ={
+				year: $container.find("[name=year]").val(),
+				month: $container.find("[name=month]").val()
+			};
+			$.ajax({
+				data: options,
+				method: "GET",
+				url: op.url,
+			}).done(function(result) {
+		        var renderCashFlowList = function (cashFlows) {
+		        	var cashFlows = result.cashFlows;
+		        	var total = 0;
+		        	_(cashFlows).forEach(function (cashFlow) {
+		        		total = total + cashFlow.Amount;
+		        	});
+			        var template = 
+			"<div class='alert alert-{{Color}} clearfix' role='alert'>" +
+			"	<div class='clearfix'>" +
+			"		<div class='float-left info-container'>" + 
+			"			<span class='d-block text-uppercase'>{{Date}}</span>" + 
+			"			<strong class='d-block text-uppercase font-we'>{{CashFlowType}}</strong>" + 
+			"		</div>" + 
+			"		<div class='float-left'>" + 
+			"  			<span>&euro;</span>&nbsp;<span class='display-3'>{{Amount}}</span>" + 
+			"		</div>" + 
+			//"		<div class='float-right'>" + 
+			//"  			<button data-source-id='{{Id}}' class='btn btn-outline-{{Color}}'><span class='fa fa-trash'></span></button>" + 
+			//"		</div>" + 
+			"	</div>" +
+			"	<div>" +
+			"		<small>{{Notes}}</small>" +
+			"	</div>" +
+			"</div>";
 
-	            _(cashFlows).forEach(function (cashFlow) {
-	            	var template = 
-	"<div class='alert alert-{{Color}} clearfix' role='alert'>" +
-	"	<div class='clearfix'>" +
-	"		<div class='float-left info-container'>" + 
-	"			<span class='d-block text-uppercase'>{{Date}}</span>" + 
-	"			<strong class='d-block text-uppercase font-we'>{{CashFlowType}}</strong>" + 
-	"		</div>" + 
-	"		<div class='float-left'>" + 
-	"  			<span>&euro;</span>&nbsp;<span class='display-3'>{{Amount}}</span>" + 
-	"		</div>" + 
-	//"		<div class='float-right'>" + 
-	//"  			<button data-source-id='{{Id}}' class='btn btn-outline-{{Color}}'><span class='fa fa-trash'></span></button>" + 
-	//"		</div>" + 
-	"	</div>" +
-	"	<div>" +
-	"		<small>{{Notes}}</small>" +
-	"	</div>" +
-	"</div>";
+			        var output = Mustache.render(template, {
+			        	CashFlowType: "Total",
+			        	Color: "success",
+			        	Amount: total,
+			        	Date: options.month + "/" + options.year
+			        });
+			        $htmlcontainer = $container.find(".cash-flow-list-container");
+		            $htmlcontainer.html("");
+			        $htmlcontainer.append(output);
+			        $htmlcontainer.append("<br/><hr/><br/>");
 
-	                var output = Mustache.render(template, cashFlow);
-	                $container.append(output);
-	            });
-	    	};
-	    	renderCashFlowList(cashFlowList);
-		}); 
+		            if(cashFlows.length != 0) {
+			            _(cashFlows).forEach(function (cashFlow) {
+			                var output = Mustache.render(template, cashFlow);
+			                $htmlcontainer.append(output);
+			            });
+		            }
+		    	};
+		    	renderCashFlowList(result);
+			}); 
+		};
+		initializeComponent();
+
+		$container.find("[name=year]").change(renderCashFlowList);
+		$container.find("[name=month]").change(renderCashFlowList);
+
+		return {
+			refresh: renderCashFlowList
+		};
 	};
-
-	renderCashFlowList();
 </script>
