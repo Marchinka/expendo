@@ -43,15 +43,15 @@
 			        var output = Mustache.render(template, {
 			        	CashFlowType: "Total",
 			        	Color: "success",
-			        	Amount: total,
+			        	Amount: total.toFixed(2);,
 			        	Date: options.month + "/" + options.year
 			        });
 			        $htmlcontainer = $container.find(".cash-flow-list-container");
 		            $htmlcontainer.html("");
 			        $htmlcontainer.append(output);
-			        $htmlcontainer.append("<br/><hr/><br/>");
 
 		            if(cashFlows.length != 0) {
+			        	$htmlcontainer.append("<br/><hr/><br/>");
 			            _(cashFlows).forEach(function (cashFlow) {
 			                var output = Mustache.render(template, cashFlow);
 			                $htmlcontainer.append(output);
