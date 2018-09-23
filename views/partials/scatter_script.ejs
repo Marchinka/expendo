@@ -1,0 +1,33 @@
+<script>
+var createPieSection = function(op){
+	var $container = $(op.container);
+	var initializeComponent = function(){
+			$container.find("[name=year]").val(new Date().getFullYear());
+	};
+	initializeComponent();
+
+	var renderChart = function () {
+			var options ={
+				year: $container.find("[name=year]").val()
+			};
+			$.ajax({
+				data: options,
+				method: "GET",
+				url: op.url,
+			}).done(function(result) {
+		        console.log("result", result)
+			}); 
+		};
+
+		window.onresize = function() {
+			Plotly.Plots.resize('pie-container');
+		};
+
+
+		$container.find("[name=year]").change(renderChart);
+		$container.find("[name=graph]").change(renderChart);
+	return {
+		refresh : renderChart
+	};
+};
+</script>

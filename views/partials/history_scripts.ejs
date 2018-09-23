@@ -1,0 +1,72 @@
+<script>
+var createHistorySection = function(op){
+	var $container = $(op.container);
+	var initializeComponent = function(){
+			$container.find("[name=year]").val(new Date().getFullYear());
+	};
+	initializeComponent();
+
+	var renderChart = function () {
+			var options ={
+				year: $container.find("[name=year]").val()
+			};
+			$.ajax({
+				data: options,
+				method: "GET",
+				url: op.url,
+			}).done(function(result) {
+		        console.log("result-h", result);
+		        var type = $container.find("[name=graph]").val();
+		        var series = {};
+		        _(result.cashFlows).forEach(function(cashFlow){
+		        	var category = cashFlow.CashFlowType;
+		        	if(!series[category]) {
+		        		series[category] = { x: [], y: [], name: category, type: type };
+		        	}
+		        	series[category].x.push(cashFlow.MonthLabel);
+		        	series[category].y.push(cashFlow.Amount);
+		        });
+
+		        console.log("series", series)
+
+		        var data = [];
+		        for (key in series) {
+		        	data.push(series[key]);
+		        }
+
+				var layout = {
+		  			margin: {
+		   		 		l: 0,
+		   		 		r: 0,
+		   		 		b: 0,
+		  		 		t: 0,
+		  		  		pad: 0
+		  			},
+		  			barmode: 'group',
+					paper_bgcolor: "#fafafa",
+					plot_bgcolor: "#fafafa",
+					legend: {
+						orientation: "h"
+  					}
+				};
+
+				var options = {
+					displayModeBar: false
+				};
+				$container.find("#chart-container").html("");
+				Plotly.newPlot('chart-container', data, layout, options);		        
+			}); 
+		};
+
+		window.onresize = function() {
+			Plotly.Plots.resize('chart-container');
+		};
+
+
+		$container.find("[name=year]").change(renderChart);
+		$container.find("[name=graph]").change(renderChart);
+	return {
+		refresh : renderChart
+	};
+};
+</script>

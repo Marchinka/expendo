@@ -70,18 +70,6 @@ app.route('/CashFlow')
 			});
 		});
 	})
-	// .delete(function(req, res) {
-	//     var pool =  mysql.createPool(databaseConfiguration);
-	// 	pool.getConnection(function(err, connection) {
-	// 		if (!connection) {
-	// 			throw new Error("Error during connection");
-	// 		}
-	// 		connection.query('DELETE * FROM CashFlowV WHERE Id = ?', req.params.id, function(err, result, fields) {
- //    			res.send(result);
-	// 		});
-	// 	  	connection.release();
-	// 	});
-	// })
 	.put(function(req, res) {
 		pool.getConnection(function(err, connection) {
 			if (!connection) {
@@ -114,8 +102,25 @@ app.route('/CashFlowSum')
 
 			var year = parseFloat(req.query.year);
 			var month = parseFloat(req.query.month);
-			console.log(month)
 			connection.query('SELECT * FROM CashFlowSumView WHERE Month = ? AND Year = ? ORDER BY Amount DESC', [month, year], function(err, result, fields) {
+				connection.release();
+    			res.send({
+    				cashFlows: result
+    			});
+			});
+		});
+	});
+
+app.route('/CashFlowHistory')
+	.get(function(req, res) {
+		pool.getConnection(function(err, connection) {
+			if (!connection) {
+				res.status(500).send('Something broke!: ' + err);
+				return;
+			}
+
+			var year = parseFloat(req.query.year);
+			connection.query('SELECT * FROM CashFlowSumView WHERE Year = ? order by Month, CashFlowType', year, function(err, result, fields) {
 				connection.release();
     			res.send({
     				cashFlows: result
