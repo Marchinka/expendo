@@ -33,8 +33,13 @@ var getUserId = function(connection, username, callback) {
 		} else {
 			console.log(JSON.stringify(result));
 			if(result) {
-				var userId = result[0].id;
-				callback(userId);
+				if (result.length > 0) {
+					var userId = result[0].id;
+					callback(userId);
+				} else {
+					console.error("No userid for " + username);
+					callback(noUserId);
+				}
 			} else {
 				console.error("No userid for " + username);
 				callback(noUserId);
