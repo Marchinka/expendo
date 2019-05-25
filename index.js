@@ -21,6 +21,28 @@ app.get('/cashflowlist', (req, res) => res.render('pages/cashflowlist'));
 
 var pool =  mysql.createPool(databaseConfiguration);
 
+var getUserId = function(connection, username, callback) {
+	var noUserId = -10;
+	if (!username) {
+		callback(noUserId);
+	}
+	connection.query('SELECT id FROM User WHERE Username = ?', username, function(err, result, fields) {
+		if(err) {
+			console.error("No userid for " + username);
+			console.error(err);
+		} else {
+			console.log(JSON.stringify(result));
+			if(result) {
+				var userId = result[0].id;
+				callback(userId);
+			} else {
+				console.error("No userid for " + username);
+				callback(noUserId);
+			}
+		}
+	});
+};
+
 app.route('/CashFlowTypes')
 	.get(function(req, res) {
 		pool.getConnection(function(err, connection) {
@@ -28,26 +50,15 @@ app.route('/CashFlowTypes')
 				res.status(500).send('Something broke!: ' + err);
 				return;
 			}
-			connection.query('SELECT id, name, colorCode FROM CashFlowTypeView', function(err, result, fields) {
-				connection.release();
-    			res.send(result);
-			});
-		});
-	});
-
-
-app.route('/CashFlowDelete/:id')
-	.get(function(req, res) {
-		pool.getConnection(function(err, connection) {
-			if (!connection) {
-				res.status(500).send('Something broke!: ' + err);
-				return;
-			}
-			connection.query('DELETE FROM CashFlow WHERE Id = ?', parseFloat(req.params.id), function(err, result, fields) {
-				connection.release();
-    			res.send({
-    				isSuccessfull: result.affectedRows == 1
-    			});
+			var username = req.query.username;
+			getUserId(connection, username, function(userId) {
+				connection.query('SELECT id, name, colorCode FROM CashFlowTypeView WHERE UserId = ?', [userId], function(err, result, fields) {
+					if(err) {
+						console.error(err);
+					}
+					connection.release();
+					res.send(result);
+				});
 			});
 		});
 	});
@@ -62,11 +73,14 @@ app.route('/CashFlow')
 
 			var year = parseFloat(req.query.year);
 			var month = parseFloat(req.query.month);
-			connection.query('SELECT * FROM CashFlowView WHERE Month = ? AND Year = ? ORDER BY Id DESC', [month, year], function(err, result, fields) {
-				connection.release();
-    			res.send({
-    				cashFlows: result
-    			});
+			var username = req.query.username;
+			getUserId(connection, username, function (userId) {
+				connection.query('SELECT * FROM CashFlowView WHERE UserId = ? AND Month = ? AND Year = ? ORDER BY Id DESC', [userId, month, year], function(err, result, fields) {
+					connection.release();
+					res.send({
+						cashFlows: result
+					});
+				});
 			});
 		});
 	})
@@ -77,17 +91,23 @@ app.route('/CashFlow')
 				return;
 			}
 
-			var sqlParameters = [
-				req.body.amount || 0,
-				req.body.cashFlowTypeId,
-				req.body.notes || '',
-				req.body.date
-			];
-			connection.query('CALL InsertCashFlow(?, ?, ?, ?)', sqlParameters, function(err, result, fields) {
-				connection.release();
-    			res.send({
-    				isSuccessfull: result.affectedRows == 1
-    			});
+			var username = req.body.username;
+			getUserId(connection, username, function(userId) {
+				var sqlParameters = [
+					req.body.amount || 0,
+					req.body.cashFlowTypeId,
+					req.body.notes || '',
+					req.body.date,
+					userId
+				];
+
+				connection.query('CALL InsertCashFlow(?, ?, ?, ?, ?)', sqlParameters, function(err, result, fields) {
+					console.log(err);
+					connection.release();
+					res.send({
+						isSuccessfull: result.affectedRows == 1
+					});
+				});
 			});
 		});
 	});
@@ -102,11 +122,15 @@ app.route('/CashFlowSum')
 
 			var year = parseFloat(req.query.year);
 			var month = parseFloat(req.query.month);
-			connection.query('SELECT * FROM CashFlowSumView WHERE Month = ? AND Year = ? ORDER BY Amount DESC', [month, year], function(err, result, fields) {
-				connection.release();
-    			res.send({
-    				cashFlows: result
-    			});
+			
+			var username = req.query.username;
+			getUserId(connection, username, function(userId) {
+				connection.query('SELECT * FROM CashFlowSumView WHERE UserId = ? AND Month = ? AND Year = ? ORDER BY Amount DESC', [userId, month, year], function(err, result, fields) {
+					connection.release();
+					res.send({
+						cashFlows: result
+					});
+				});
 			});
 		});
 	});
@@ -120,11 +144,14 @@ app.route('/CashFlowHistory')
 			}
 
 			var year = parseFloat(req.query.year);
-			connection.query('SELECT * FROM CashFlowSumView WHERE Year = ? order by Month, CashFlowType', year, function(err, result, fields) {
-				connection.release();
-    			res.send({
-    				cashFlows: result
-    			});
+			var username = req.query.username;
+			getUserId(connection, username, function(userId) {
+				connection.query('SELECT * FROM CashFlowSumView WHERE UserId = ? and Year = ? order by Month, CashFlowType', [userId, year], function(err, result, fields) {
+					connection.release();
+					res.send({
+						cashFlows: result
+					});
+				});
 			});
 		});
 	});

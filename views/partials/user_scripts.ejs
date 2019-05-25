@@ -1,0 +1,17 @@
+<script>
+var createUserSection = function(op){
+	var $container = $(op.container);
+	$("input[name=user]").change(function(e) {
+		localStorage.setItem("username", e.target.value);
+	});
+
+	var renderUser = function() {
+		var username = localStorage.getItem("username");
+		$("input[name=user]").val(username);
+	};
+
+	return {
+		refresh : renderUser
+	};
+};
+</script>

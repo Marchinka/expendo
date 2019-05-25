@@ -28,10 +28,13 @@
         <% include ../partials/pie_template.ejs %>
       </div>   
 
-
       <div id="history-chart">
         <% include ../partials/history_template.ejs %>
-      </div>   
+      </div>  
+      
+      <div id="user">
+        <% include ../partials/user_template.ejs %>
+      </div>  
     </div>
 
   </main>
@@ -43,6 +46,7 @@
 <% include ../partials/cashflowlist_scripts.ejs %>
 <% include ../partials/pie_scripts.ejs %>
 <% include ../partials/history_scripts.ejs %>
+<% include ../partials/user_scripts.ejs %>
 <script>
     var insertCashFlow = createInsertCashFlow();
     var cashFlowList = createCashFlowList({
@@ -61,6 +65,10 @@
         url: "/CashFlowHistory",
         container: "#history-chart"
     });
+    var userSection = createUserSection({
+        url: "/User",
+        container: "#user"
+    });
 
   var goToInsertCashFlow = function() {
 
@@ -69,6 +77,7 @@
       $("#cash-flow-list").hide();
       $("#cash-flow-sum-list").hide();
       $("#insert-cash-flow").show();
+    $("#user").hide();
       insertCashFlow.refresh();
   };
 
@@ -79,6 +88,7 @@
       $("#insert-cash-flow").hide();
       $("#cash-flow-sum-list").hide();
       $("#cash-flow-list").show();
+    $("#user").hide();
       cashFlowList.refresh();
   };
 
@@ -89,6 +99,7 @@
       $("#insert-cash-flow").hide();
       $("#cash-flow-list").hide();
       $("#cash-flow-sum-list").show();
+    $("#user").hide();
       cashFlowSumList.refresh();
   };
 
@@ -99,6 +110,7 @@
       $("#insert-cash-flow").hide();
       $("#cash-flow-list").hide();
       $("#cash-flow-sum-list").hide();
+    $("#user").hide();
       pieSection.refresh();
   };
 
@@ -109,7 +121,18 @@
       $("#insert-cash-flow").hide();
       $("#cash-flow-list").hide();
       $("#cash-flow-sum-list").hide();
+    $("#user").hide();
       historySection.refresh();
+  };
+
+  var goToUser = function() {
+    $("#history-chart").hide();
+    $("#pie-chart").hide();
+    $("#insert-cash-flow").hide();
+    $("#cash-flow-list").hide();
+    $("#cash-flow-sum-list").hide();
+    $("#user").show();
+    userSection.refresh();
   };
 
   Router.navigate();
@@ -120,6 +143,7 @@
   .add(/CashFlowSumList/, goToCashFlowSumLIst)
   .add(/PieChart/, goToPieChart)
   .add(/History/, goToHistoryChart)
+  .add(/User/, goToUser)
   .listen();
 
   Router.navigate("/InsertCashFlow/");

@@ -9,6 +9,7 @@ var createPieSection = function(op){
 
 	var renderPieChart = function () {
 			var options ={
+				username: localStorage.getItem("username"),
 				year: $container.find("[name=year]").val(),
 				month: $container.find("[name=month]").val()
 			};

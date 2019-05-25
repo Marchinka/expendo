@@ -6,7 +6,8 @@
 			$container.find("[name=month]").val(new Date().getMonth() + 1);
 		};
 		var renderCashFlowList = function () {
-			var options ={
+			var options = {
+				username: localStorage.getItem("username"),
 				year: $container.find("[name=year]").val(),
 				month: $container.find("[name=month]").val()
 			};

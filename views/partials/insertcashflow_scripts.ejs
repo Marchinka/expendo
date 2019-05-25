@@ -1,6 +1,6 @@
 <script>
 var createInsertCashFlow = function(){
-
+	var insertInProgress = false;
   	var initializeComponents = function () {
         $("#amount").focus();
         var now = moment().format('DD/MM/YYYY hh:mm');
@@ -10,6 +10,9 @@ var createInsertCashFlow = function(){
 		$.ajax({
 			method: "GET",
 			url: "/cashflowtypes",
+			data: {
+				username: localStorage.getItem("username")
+			}
 		}).done(function(cashFlowTypes) {
 	        var renderCashFlowTypes = function (cashFlows) {
 	            $container = $("#cash-flow-types");
@@ -30,6 +33,10 @@ var createInsertCashFlow = function(){
         		event: "click",
         		target: ".cash-flow-button", 
         		callback: function (e) {
+        			if(insertInProgress) {
+        				return;
+        			}
+        			insertInProgress = true;
 		            var target = e.target;
 		            var cashFlowTypeId = target.dataset.typeId;
 		            var amount = $("#amount").val();
@@ -37,6 +44,7 @@ var createInsertCashFlow = function(){
 		            var notes = $("#notes").val();
 
 		            var data = {
+						username: localStorage.getItem("username"),
 		                cashFlowTypeId: cashFlowTypeId,
 		                amount: amount,
 		                date: date,
@@ -58,6 +66,7 @@ var createInsertCashFlow = function(){
 					    contentType: "application/json; charset=utf-8",
 						data: JSON.stringify(data)
 					}).done(function(result) {
+        				insertInProgress = false;
 						if(result.isSuccessfull) {
 							$.snackbar({
 								content: "<div class='text-center'><span>Cash flow created! </span><i class='text-success align-middle far fa-smile fa-2x'></i></div>",
@@ -73,7 +82,8 @@ var createInsertCashFlow = function(){
 							});
 						}
 					}).fail(function () {
-							$.snackbar({
+	        					insertInProgress = false;
+								$.snackbar({
 								content: "<div class='text-center'><span>Smothing went wrong... </span><i class='text-warning align-middle far fa-frown fa-2x'></i></div>",
 								htmlAllowed: true
 							});	

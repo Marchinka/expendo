@@ -8,6 +8,7 @@ var createHistorySection = function(op){
 
 	var renderChart = function () {
 			var options ={
+				username: localStorage.getItem("username"),
 				year: $container.find("[name=year]").val()
 			};
 			$.ajax({
